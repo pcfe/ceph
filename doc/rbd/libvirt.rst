@@ -86,13 +86,88 @@ To configure Ceph for use with ``libvirt``, perform the following steps:
    `User Management - CLI`_ for a detailed explanation of the difference 
    between ID and name.	
 
+Configuring libvirt storage pool
+================================
+
+Please read https://libvirt.org/storage.html
+to avoid confusing Ceph pools and libvirt storage pools
+
+Then read https://libvirt.org/storage.html#StorageBackendRBD
+To learn about configuring a libvirt storage pool of type Ceph RBD pool
+
+#. If your Ceph Storage Cluster has `Ceph Authentication`_ enabled (it does by 
+   default), you must generate a secret. On the libvirt machine :: 
+
+	cat > secret.xml <<EOF
+	<secret ephemeral='no' private='no'>
+		<usage type='ceph'>
+			<name>client.libvirt secret</name>
+		</usage>
+	</secret>
+	EOF
+
+#. Define the secret. On the libvirt machine ::
+
+	sudo virsh secret-define --file secret.xml
+	<uuid of secret is output here>
+
+#. Get the ``client.libvirt`` key and save the key string to a file. On a Ceph machine ::
+
+	ceph auth get-key client.libvirt | sudo tee client.libvirt.key
+
+#. Transfer ``client.libvirt.key`` securely to you libvirt machine.
+
+#. Feed the secret to libvirt. On the libvirt machine ::
+
+	sudo virsh secret-set-value --secret {uuid of secret} --base64 $(cat client.libvirt.key) && rm client.libvirt.key secret.xml
+
+#. Use the UUID of the secret when defining your libvirt storage pool. On the libvirt machine
+   You reference the secret by it's UUID in the ``<auth>`` section of your storage pool definition.
+   See https://libvirt.org/storage.html#StorageBackendRBD for details.
+
+   Write an xml file with pool type rbd, a name of your choice, Ceph relevant details
+   in ``<source>`` (the Ceph pool name, your mons and the uuid of the secret you defined
+   for libvirt).
+
+   Sample file ``/root/tmp/Ceph-HouseNet-libvirt-pool.xml`` ::
+
+      <!--
+         https://libvirt.org/storage.html#StorageBackendRBD
+      -->
+      <pool type="rbd">
+      <name>Ceph-HouseNet-libvirt-pool</name>
+      <source>
+         <name>libvirt-pool</name>
+         <host name='mon-00'/>
+         <host name='mon-01'/>
+         <host name='mon-02'/>
+         <auth username='libvirt' type='ceph'>
+            <secret uuid='0611b35d-dead-beef-aaaa-c0ffeec0ffee'/>
+         </auth>
+      </source>
+      </pool>
+
+   Define the storage pool. On the libvirt machine ::
+
+      virsh pool-define /root/tmp/Ceph-HouseNet-libvirt-pool.xml
+
+   **NOTE:** The exemplary ID is ``libvirt``, not the Ceph name 
+   ``client.libvirt`` as generated at step 2 of `Configuring Ceph`_. Ensure 
+   you use the ID component of the Ceph name you generated. If for some reason 
+   you need to regenerate the secret, you will have to execute 
+   ``sudo virsh secret-undefine {uuid}`` before executing 
+   ``sudo virsh secret-set-value`` again.
+
+Test if qemu can create an image
+================================
+
 #. Use QEMU to `create an image`_ in your RBD pool. 
    The following example uses the image name ``new-libvirt-image``
    and references ``libvirt-pool``. ::
 
 	qemu-img create -f rbd rbd:libvirt-pool/new-libvirt-image 2G
 
-   Verify the image exists. :: 
+   Verify on the Ceph side that the image exists. On a Ceph host :: 
 
 	rbd -p libvirt-pool ls
 
@@ -113,8 +188,8 @@ To configure Ceph for use with ``libvirt``, perform the following steps:
 
 
 
-Preparing the VM Manager
-========================
+Installing the VM Manager
+=========================
 
 You may use ``libvirt`` without a VM manager, but you may find it simpler to
 create your first domain with ``virt-manager``. 
@@ -130,6 +205,76 @@ create your first domain with ``virt-manager``.
 	sudo virt-manager
 
 
+
+Verifying your pool is functional from within virt-manager
+==========================================================
+
+To ensure you configured both Ceph and libvirt correctly,
+perform the following steps
+
+#. Edit / Connection details
+   of the libvirt host
+
+#. Navigate to the Storage tab
+
+#. Verify that you see the Ceph pool
+   and the test volume you created earlier.
+   If you do not see your pool, ensure ``libvirtd.service`` is aware
+   of your changes to the storage pool definition.
+
+#. Verify that you can create a volume from within ``virt-manager``
+   by using the + icon.
+
+#. Ensure you see the volume on the Ceph side ::
+
+	[root@odroid-hc2-00 ~]# rbd -p libvirt-pool ls
+	test1
+	test2
+
+#. Close the Connection Details window
+
+Using your RBD pool
+===================
+
+Use it like just any other libvirt storage pool
+
+This means;
+
+#) in ``virt-manager`` using Select or create custom storage and then choosing your Ceph pool
+   unless you made that pool the default
+
+#) with ``virt-install`` you just reference it by using ``--disk pool=`` ::
+
+	virt-install \
+		--name rhel7.5-testmachine \
+		--os-variant rhel7 \
+		--disk pool=Ceph-HouseNet-libvirt-pool,boot_order=1,format=raw,bus=virtio,sparse=yes,size=10 \
+	[...]
+
+Example xml of a VM using the above pool
+========================================
+
+``virsh dumpxml rhel7.5-testmachine`` ::
+
+	[...]
+	<disk type='network' device='disk'>
+		<driver name='qemu' type='raw'/>
+		<auth username='libvirt'>
+			<secret type='ceph' uuid='0611b35d-dead-beef-aaaa-c0ffeec0ffee'/>
+		</auth>
+		<source protocol='rbd' name='libvirt-pool/test1'>
+			<host name='odroid-hc2-00'/>
+			<host name='odroid-hc2-01'/>
+			<host name='odroid-hc2-02'/>
+		</source>
+		<target dev='vda' bus='virtio'/>
+		<alias name='virtio-disk0'/>
+		<address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+	</disk>
+	[...]
+
+FIXME:: most of what follows binds one vol from a Ceph pool, the above tries to
+get the use to use a pool on the libvirt side too, reword below as necessary
 
 Creating a VM
 =============
@@ -161,7 +306,6 @@ To create a VM with ``virt-manager``, perform the following steps:
 #. Login to the VM (root/root)
 
 #. Stop the VM before configuring it for use with Ceph.
-
 
 Configuring the VM
 ==================
