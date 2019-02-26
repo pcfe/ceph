@@ -337,16 +337,14 @@ following procedures.
 
 	sudo virsh qemu-monitor-command --hmp {vm-domain-name} 'info block'
 
-FIXME:: the bus and target are not consistent with text above plus since I use UUIDs,
-I have little love for ``taregt dev``.
-
-#. Check to see if the device from ``<target dev='hdb' bus='ide'/>`` appears
-   under ``/dev`` or under ``proc/partitions``. :: 
+#. Check to see if the device from ``virsh dumpxml {vm-domain-name}``, look for ``<target dev='vda' bus='virtio'/>``, appears
+   under ``/dev`` or under ``/proc/partitions`` in the VM. :: 
    
+	lsblk
 	ls dev
 	cat proc/partitions
 
-If everything looks okay, you may begin using the Ceph block device 
+If everything looks okay, you are using the Ceph block device 
 within your VM.
 
 
