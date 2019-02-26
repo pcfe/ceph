@@ -2,7 +2,7 @@
  Using libvirt with Ceph RBD
 =================================
 
-.. index:: Ceph Block Device; livirt
+.. index:: Ceph Block Device; libvirt
 
 The ``libvirt`` library creates a virtual machine abstraction layer between 
 hypervisor interfaces and the software applications that use them. With 
@@ -312,7 +312,7 @@ To create a VM with ``virt-manager``, perform the following steps:
 
 #. Login to the VM (root/root on some recent-linux.img)
    use ``fio`` to test the RBD backed disk your VM is running on if you want to get
-   an indication of what performanmce your Ceph cluster can give the VM.
+   an indication of what performance your Ceph cluster can give the VM.
 
 
 Summary
