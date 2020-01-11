@@ -59,17 +59,17 @@ Configuring Ceph
 To configure Ceph for use with ``libvirt``, perform the following steps:
 
 #. `Create a pool`_. The following example uses the 
-   pool name ``libvirt-pool`` with 128 placement groups. ::
+   pool name ``libvirt-pool`` with 16 placement groups. ::
 
-	ceph osd pool create libvirt-pool 128 128
+	ceph osd pool create libvirt-pool 16 16
 
    Verify the pool exists. :: 
 
-	ceph osd lspools
+	ceph osd pool ls detail
 
 #. Use the ``rbd`` tool to initialize the pool for use by RBD::
 
-        rbd pool init <pool-name>
+   rbd pool init <pool-name>
 
 #. `Create a Ceph User`_ (or use ``client.admin`` for version 0.9.7 and
    earlier). The following example uses the Ceph user name ``client.libvirt``
@@ -149,7 +149,8 @@ To learn about configuring a libvirt storage pool of type Ceph RBD pool
 
    Define the storage pool. On the libvirt machine ::
 
-      virsh pool-define /root/tmp/Ceph-HouseNet-libvirt-pool.xml
+      sudo virsh pool-define /root/tmp/Ceph-HouseNet-libvirt-pool.xml
+      sudo virsh pool-start Ceph-HouseNet-libvirt-pool
 
    **NOTE:** The exemplary ID is ``libvirt``, not the Ceph name 
    ``client.libvirt`` as generated at step 2 of `Configuring Ceph`_. Ensure 
@@ -158,14 +159,14 @@ To learn about configuring a libvirt storage pool of type Ceph RBD pool
    ``sudo virsh secret-undefine {uuid}`` before executing 
    ``sudo virsh secret-set-value`` again.
 
-Test if qemu can create an image
-================================
+Test if virsh can create an image
+=================================
 
-#. Use QEMU to `create an image`_ in your RBD pool. 
+#. Use virsh to `create an image`_ in your RBD pool. (
    The following example uses the image name ``new-libvirt-image``
-   and references ``libvirt-pool``. ::
+   and references ``Ceph-HouseNet-libvirt-pool``. ::
 
-	qemu-img create -f rbd rbd:libvirt-pool/new-libvirt-image 2G
+	virsh vol-create-as Ceph-HouseNet-libvirt-pool new-libvirt-image 10g
 
    Verify on the Ceph side that the image exists. On a Ceph host :: 
 
@@ -347,6 +348,26 @@ following procedures.
 If everything looks okay, you are using the Ceph block device 
 within your VM.
 
+missing storage backend for network files using rbd protocol
+============================================================
+
+FIXME used to get the below, re-check.
+Check https://www.redhat.com/archives/libvir-list/2016-May/msg00212.html
+I see the following in my logs every 10 seconds.:: 
+
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
+	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
 
 .. _Installation: ../../install
 .. _libvirt Virtualization API: http://www.libvirt.org
