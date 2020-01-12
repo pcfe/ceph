@@ -351,9 +351,11 @@ within your VM.
 missing storage backend for network files using rbd protocol
 ============================================================
 
-FIXME used to get the below, re-check.
-Check https://www.redhat.com/archives/libvir-list/2016-May/msg00212.html
-I see the following in my logs every 10 seconds.:: 
+Please see;
+- https://access.redhat.com/solutions/4252871
+- https://bugzilla.redhat.com/show_bug.cgi?id=1724808
+
+If you find yuour logs spammed with 
 
 	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
 	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
