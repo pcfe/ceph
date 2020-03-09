@@ -352,10 +352,11 @@ missing storage backend for network files using rbd protocol
 ============================================================
 
 Please see;
+
 - https://access.redhat.com/solutions/4252871
 - https://bugzilla.redhat.com/show_bug.cgi?id=1724808
 
-If you find yuour logs spammed with 
+If you find your logs spammed with ::
 
 	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
 	error : virStorageFileBackendForType:142 : internal error: missing storage backend for network files using rbd protocol
