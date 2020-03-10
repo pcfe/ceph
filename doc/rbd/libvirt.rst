@@ -197,8 +197,8 @@ create your first domain with ``virt-manager``.
 
 #. Install a virtual machine manager. See `VirtManager`_ and `KVM/VirtManager`_ for details. ::
 
-   sudo dnf install virt-manager     # on Fedora and RHEL8
-   sudo yum install virt-manager     # on RHEL7
+	sudo dnf install virt-manager     # on Fedora and RHEL8
+	sudo yum install virt-manager     # on RHEL7
 	sudo apt-get install virt-manager # on Debian
 
 #. Download an OS image (if necessary).
