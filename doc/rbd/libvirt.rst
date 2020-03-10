@@ -86,6 +86,7 @@ To configure Ceph for use with ``libvirt``, perform the following steps:
    `User Management - CLI`_ for a detailed explanation of the difference 
    between ID and name.	
 
+
 Configuring libvirt storage pool
 ================================
 
@@ -138,11 +139,11 @@ To learn about configuring a libvirt storage pool of type Ceph RBD pool
       <name>Ceph-HouseNet-libvirt-pool</name>
       <source>
          <name>libvirt-pool</name>
-         <host name='mon-00'/>
-         <host name='mon-01'/>
-         <host name='mon-02'/>
+         <host name='mon-1'/>
+         <host name='mon-2'/>
+         <host name='mon-3'/>
          <auth username='libvirt' type='ceph'>
-            <secret uuid='0611b35d-dead-beef-aaaa-c0ffeec0ffee'/>
+            <secret uuid='{uuid of secret}'/>
          </auth>
       </source>
       </pool>
@@ -158,6 +159,7 @@ To learn about configuring a libvirt storage pool of type Ceph RBD pool
    you need to regenerate the secret, you will have to execute 
    ``sudo virsh secret-undefine {uuid}`` before executing 
    ``sudo virsh secret-set-value`` again.
+
 
 Test if virsh can create an image
 =================================
@@ -187,8 +189,6 @@ Test if virsh can create an image
    client process (qemu via libvirt) from writing the logs or admin socket to
    the destination locations (``/var/log/ceph`` or ``/var/run/ceph``).
 
-
-
 Installing the VM Manager
 =========================
 
@@ -197,7 +197,9 @@ create your first domain with ``virt-manager``.
 
 #. Install a virtual machine manager. See `VirtManager`_ and `KVM/VirtManager`_ for details. ::
 
-	sudo apt-get install virt-manager
+   sudo dnf install virt-manager     # on Fedora and RHEL8
+   sudo yum install virt-manager     # on RHEL7
+	sudo apt-get install virt-manager # on Debian
 
 #. Download an OS image (if necessary).
 
@@ -207,7 +209,6 @@ create your first domain with ``virt-manager``.
 
 #. Connect to a hypervisor (expect ``qemu:///system`` to be defined, but you may want to connect
    to a remote host using ``qemu+ssh://root@hypervisor.example.com/system`` or similar).
-
 
 
 Verifying your pool is functional from within virt-manager
@@ -258,18 +259,21 @@ This means;
 Example xml of a VM using the above pool
 ========================================
 
+You may want to check if your VM configuration is using RBD, to do this
+use the ``virsh dumpxml`` command and look for the relevant disk definituion block.
+
 ``virsh dumpxml rhel7.5-testmachine`` ::
 
 	[...]
 	<disk type='network' device='disk'>
 		<driver name='qemu' type='raw'/>
 		<auth username='libvirt'>
-			<secret type='ceph' uuid='0611b35d-dead-beef-aaaa-c0ffeec0ffee'/>
+			<secret uuid='{uuid of secret}'/>
 		</auth>
 		<source protocol='rbd' name='libvirt-pool/test1'>
-			<host name='odroid-hc2-00'/>
-			<host name='odroid-hc2-01'/>
-			<host name='odroid-hc2-02'/>
+			<host name='mon-1'/>
+			<host name='mon-2'/>
+			<host name='mon-3'/>
 		</source>
 		<target dev='vda' bus='virtio'/>
 		<alias name='virtio-disk0'/>
