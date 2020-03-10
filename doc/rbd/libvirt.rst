@@ -294,6 +294,35 @@ To create a VM with ``virt-manager``, perform the following steps:
 #. Use ``fio`` to test the RBD backed disk your VM is running on if you want to get
    an indication of what performance your Ceph cluster can give the VM.
 
+Creating a VM from the commandline
+==================================
+
+You may prefer to create your VM from CLI instead of GUI.
+
+For example, 2 vHD. One in you default pool (probably, but not necessarily, 
+``/var/lib/libvirt/images/``) and one on the previously defined, Ceph RBD pool backed, storage pool.
+you may also want to measure performance wirth ``bus=virtio`` instead of ``bus=scsi`` ::
+
+   virt-install --name F31_Ceph_RBD_test \
+      --os-variant fedora29 \
+      --location http://download.fedoraproject.org/pub/fedora/linux/releases/31/Server/x86_64/os \
+      --extra-args "console=ttyS0,115200" \
+      --ram 4096 \
+      --disk pool=default,boot_order=1,format=qcow2,bus=scsi,discard=unmap,sparse=yes,size=10 \
+      --disk pool=Ceph-HouseNet-libvirt-pool,boot_order=2,bus=scsi,sparse=yes,size=50 \
+      --controller scsi,model=virtio-scsi \
+      --rng /dev/random \
+      --boot useserial=on \
+      --vcpus 1 \
+      --cpu host \
+      --nographics \
+      --accelerate \
+      --network network=default,model=virtio
+
+Please note that when you create a VM with ``virt-install`` you may need to refresh your
+storage pool in ``virt-manager`` under *your hypervisor* / *Details* / *Storage*
+if you do not yet see the newly created disk(s)
+
 Example xml of a VM using the above pool
 ========================================
 
