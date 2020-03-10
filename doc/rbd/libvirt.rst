@@ -256,31 +256,6 @@ This means;
 		--disk pool=Ceph-HouseNet-libvirt-pool,boot_order=1,format=raw,bus=virtio,sparse=yes,size=10 \
 	[...]
 
-Example xml of a VM using the above pool
-========================================
-
-You may want to check if your VM configuration is using RBD, to do this
-use the ``virsh dumpxml`` command and look for the relevant disk definituion block.
-
-``virsh dumpxml rhel7.5-testmachine`` ::
-
-	[...]
-	<disk type='network' device='disk'>
-		<driver name='qemu' type='raw'/>
-		<auth username='libvirt'>
-			<secret uuid='{uuid of secret}'/>
-		</auth>
-		<source protocol='rbd' name='libvirt-pool/test1'>
-			<host name='mon-1'/>
-			<host name='mon-2'/>
-			<host name='mon-3'/>
-		</source>
-		<target dev='vda' bus='virtio'/>
-		<alias name='virtio-disk0'/>
-		<address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
-	</disk>
-	[...]
-
 FIXME:: most of what follows binds one vol from a Ceph pool, the above tries to
 get the use to use a pool on the libvirt side too, reword below as necessary
 
@@ -318,6 +293,31 @@ To create a VM with ``virt-manager``, perform the following steps:
 #. Login to the VM (root/root on some recent-linux.img)
    use ``fio`` to test the RBD backed disk your VM is running on if you want to get
    an indication of what performance your Ceph cluster can give the VM.
+
+Example xml of a VM using the above pool
+========================================
+
+You may want to check if your VM configuration is using RBD, to do this
+use the ``virsh dumpxml`` command and look for the relevant disk definituion block.
+
+``virsh dumpxml rhel7.5-testmachine`` ::
+
+	[...]
+	<disk type='network' device='disk'>
+		<driver name='qemu' type='raw'/>
+		<auth username='libvirt'>
+			<secret uuid='{uuid of secret}'/>
+		</auth>
+		<source protocol='rbd' name='libvirt-pool/test1'>
+			<host name='mon-1'/>
+			<host name='mon-2'/>
+			<host name='mon-3'/>
+		</source>
+		<target dev='vda' bus='virtio'/>
+		<alias name='virtio-disk0'/>
+		<address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+	</disk>
+	[...]
 
 
 Summary
