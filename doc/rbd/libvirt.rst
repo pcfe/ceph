@@ -193,6 +193,7 @@ Test if virsh can create and delete an image
 ============================================
 
 #. List your pool content ::
+
    root@hypervisor ~ # virsh vol-list --pool Ceph-HouseNet-libvirt-pool 
    Name                 Path                                    
    ------------------------------------------------------------------------------
@@ -200,10 +201,12 @@ Test if virsh can create and delete an image
    F31_Ceph_RBD_test    libvirt-pool/F31_Ceph_RBD_test          
 
 #. Create a new image ::
+
    root@hypervisor ~ # virsh vol-create-as Ceph-HouseNet-libvirt-pool new-libvirt-image 10g
    Vol new-libvirt-image created
 
 #. Verify the new image shows up in the livirt storage pool ::
+
    root@hypervisor ~ # virsh vol-list --pool Ceph-HouseNet-libvirt-pool 
    Name                 Path                                    
    ------------------------------------------------------------------------------
@@ -212,10 +215,12 @@ Test if virsh can create and delete an image
    new-libvirt-image    libvirt-pool/new-libvirt-image          
 
 #. Delete an image ::
+
    root@hypervisor ~ # virsh vol-delete --pool Ceph-HouseNet-libvirt-pool --vol new-libvirt-image
    Vol new-libvirt-image deleted
 
 #. Verify the image disappears ::
+
    root@hypervisor ~ # virsh vol-list --pool Ceph-HouseNet-libvirt-pool 
    Name                 Path                                    
    ------------------------------------------------------------------------------
