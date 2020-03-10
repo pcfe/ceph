@@ -266,7 +266,7 @@ To create a VM with ``virt-manager``, perform the following steps:
 
 #. Press the **Create New Virtual Machine** button. 
 
-#. Name the new virtual machine domain. In the exemplary embodiment, we
+#. Name the new virtual machine domain. In the following exemple, we
    use the name ``libvirt-virtual-machine``. You may use any name you wish,
    but ensure you replace ``libvirt-virtual-machine`` with the name you 
    choose in subsequent commandline and configuration examples. :: 
@@ -283,15 +283,15 @@ To create a VM with ``virt-manager``, perform the following steps:
    **NOTE:** You can also install your VM by attaching an ISO or network booting.
    
 #. Configure and start the VM.
-   Be sure to choose your Ceph pool unless you made that pool the default.
+   Be sure to choose your Ceph pool for storage, unless you made that pool the default.
 
-
-#. You may use ``virsh list`` to verify the VM domain exists. ::
+#. You may use ``virsh list`` on the command line to verify the VM domain exists. ::
 
 	sudo virsh list
 
 #. Login to the VM (root/root on some recent-linux.img)
-   use ``fio`` to test the RBD backed disk your VM is running on if you want to get
+
+#. Use ``fio`` to test the RBD backed disk your VM is running on if you want to get
    an indication of what performance your Ceph cluster can give the VM.
 
 Example xml of a VM using the above pool
