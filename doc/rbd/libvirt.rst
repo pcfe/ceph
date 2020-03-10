@@ -226,7 +226,7 @@ Test if virsh can create and delete an image
    ------------------------------------------------------------------------------
    20200309-fio-testing-1TiB libvirt-pool/20200309-fio-testing-1TiB  
    F31_Ceph_RBD_test    libvirt-pool/F31_Ceph_RBD_test  
-   
+
 Installing the VM Manager
 =========================
 
