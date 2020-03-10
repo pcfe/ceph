@@ -197,7 +197,6 @@ Test if virsh can create and delete an image
 	root@hypervisor ~ # virsh vol-list --pool Ceph-HouseNet-libvirt-pool 
 	Name                 Path                                    
 	------------------------------------------------------------------------------
-	20200309-fio-testing-1TiB libvirt-pool/20200309-fio-testing-1TiB  
 	F31_Ceph_RBD_test    libvirt-pool/F31_Ceph_RBD_test          
 
 #. Create a new image ::
@@ -210,7 +209,6 @@ Test if virsh can create and delete an image
 	root@hypervisor ~ # virsh vol-list --pool Ceph-HouseNet-libvirt-pool 
 	Name                 Path                                    
 	------------------------------------------------------------------------------
-	20200309-fio-testing-1TiB libvirt-pool/20200309-fio-testing-1TiB  
 	F31_Ceph_RBD_test    libvirt-pool/F31_Ceph_RBD_test          
 	new-libvirt-image    libvirt-pool/new-libvirt-image          
 
@@ -224,7 +222,6 @@ Test if virsh can create and delete an image
 	root@hypervisor ~ # virsh vol-list --pool Ceph-HouseNet-libvirt-pool 
 	Name                 Path                                    
 	------------------------------------------------------------------------------
-	20200309-fio-testing-1TiB libvirt-pool/20200309-fio-testing-1TiB  
 	F31_Ceph_RBD_test    libvirt-pool/F31_Ceph_RBD_test  
 
 Installing the VM Manager
