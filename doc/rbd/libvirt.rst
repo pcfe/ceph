@@ -107,6 +107,12 @@ To learn about configuring a libvirt storage pool of type Ceph RBD pool
 	</secret>
 	EOF
 
+FIXME: https://libvirt.org/formatsecret.html#CephUsageType says private yes, so test and rewrite
+
+FIXME: also, since I want to migrate VMs, it is much better to use the secret's name
+instead of the UUID, since that will not be the same on both hypervisors.
+
+
 #. Define the secret. On the libvirt machine ::
 
 	sudo virsh secret-define --file secret.xml
@@ -147,6 +153,17 @@ To learn about configuring a libvirt storage pool of type Ceph RBD pool
          </auth>
       </source>
       </pool>
+
+FIXME: that xml above is where ::
+
+         <auth type='ceph' username='libvirt-test'>
+            <secret usage='client.libvirt-test secret'/>
+         </auth>
+
+Is probably much better. Needs testing still.
+Current test state;
+- creating volumes in the storage view of virt-manager works but attaching to a VM fails.
+  probably typo of mine, but do also look at RHBZ #1544659
 
    Define the storage pool. On the libvirt machine ::
 
