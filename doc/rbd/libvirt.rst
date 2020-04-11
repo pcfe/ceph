@@ -373,13 +373,13 @@ you may also want to measure performance wirth ``bus=virtio`` instead of ``bus=s
 
 Please note that when you create a VM with ``virt-install`` you may need to refresh your
 storage pool in ``virt-manager`` under *your hypervisor* / *Details* / *Storage*
-if you do not yet see the newly created disk(s)
+if you do not yet see the newly created disk(s).
 
 Example xml of a VM using the above pool
 ========================================
 
 You may want to check if your VM configuration is using RBD, to do this
-use the ``virsh dumpxml`` command and look for the relevant disk definituion block.
+use the ``virsh dumpxml`` command and look for the relevant disk definition block.
 
 ``virsh dumpxml rhel7.5-testmachine`` ::
 
@@ -424,7 +424,7 @@ following procedures.
 	sudo virsh qemu-monitor-command --hmp {vm-domain-name} 'info block'
 
 #. Check to see if the device from ``virsh dumpxml {vm-domain-name}``, look for ``<target dev='vda' bus='virtio'/>``, appears
-   under ``/dev`` or under ``/proc/partitions`` in the VM. :: 
+   under ``/dev`` or under ``/proc/partitions`` inside the VM. :: 
    
 	lsblk
 	ls dev
